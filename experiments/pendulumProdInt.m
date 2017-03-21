@@ -12,10 +12,10 @@ nIterations = 10;
 lengthScale = [0.5 0.5 0.5]';
 signalSigma = 1;
 noiseSigma = 1;
-nExperiments = 3;
+nExperiments = 5;
 algorithm = 'wfqi';
 
-nEpisodes = 10;
+nEpisodes = 100;
 horizon = 100;
 rewardNoiseSigma = 0;
 
