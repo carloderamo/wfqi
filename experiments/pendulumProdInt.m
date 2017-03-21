@@ -8,15 +8,15 @@ stateDim = 2;
 nActions = 0;
 lowerAction = -5;
 upperAction = 5;
-nIterations = 2;
+nIterations = 10;
 lengthScale = [0.5 0.5 0.5]';
 signalSigma = 1;
 noiseSigma = 1;
 nExperiments = 3;
 algorithm = 'wfqi';
 
-nEpisodes = 3;
-horizon = 10;
+nEpisodes = 10;
+horizon = 100;
 rewardNoiseSigma = 0;
 
 nBins = 1e2;
@@ -35,15 +35,19 @@ for e = 0:nExperiments - 1
     noisyTest = false;
     
     % Trapz
-    nTrapz = 1e4;
+    nTrapz = 1e3;
     integralLimit = 10;
     sampling = false;
+    tic
     gp = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
                      lengthScale, signalSigma, noiseSigma, ...
                      noisyTest, nTrapz, integralLimit, ...
                      lowerAction, upperAction, sampling);
-
+    toc
+    
+    tic
     Jt(e + 1) = evaluatePolicy(gp, nBins, horizon);
+    toc
     
     % Sampling
     %sampling = true;
@@ -56,4 +60,4 @@ end
 
 savePath = strcat(initialPath, '/', nEpisodesStr,'/');
 save(strcat(savePath, 'resultsProdIntTrapz.txt'), 'Jt', '-ascii');
-save(strcat(savePath, 'resultsProdIntSampling.txt'), 'Js', '-ascii');
+%save(strcat(savePath, 'resultsProdIntSampling.txt'), 'Js', '-ascii');
