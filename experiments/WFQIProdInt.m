@@ -31,9 +31,7 @@ function [gp] = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
 
                 gpInput = repmat(nextStates(j, :), length(xa), 1);
                 gpInput = [gpInput, xa'];
-                tic
                 [means, sigma] = gp.predict(gpInput);
-                toc
                 if ~noisyTest
                     sigma = sqrt(sigma.^2 - gp.Sigma^2);
                 end;
@@ -46,14 +44,12 @@ function [gp] = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
                                repmat(sigma', length(xs), 1));
 
                 cdfs(cdfs < 1e-6) = 1e-6;
-                tic
                 productInt = exp(trapz(xa, log(cdfs')));
                 W(j) = trapz(xs, trapz(xa, repmat(means, ...
                                                   1, ...
                                                   size(pdfs, 2)) .* ...
                                                   pdfs' ./ cdfs') .* ...
                                                   productInt);
-                 toc
 %                fprintf('Trapz: %f\n', W(j))
 %
 %                 N = 1e3;

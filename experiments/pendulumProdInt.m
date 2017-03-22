@@ -27,28 +27,24 @@ nEpisodesStr = strcat(int2str(nEpisodes), 'Episodes');
 
 for e = 0:nExperiments - 1
     fprintf('Experiment: %d\n', e + 1);
-    
+
     % Make sars dataset    
     sars = collectDataset(rewardNoiseSigma, nEpisodes, horizon, nActions);
 
     % W-Fitted Q-Iteration
     noisyTest = false;
-    
+
     % Trapz
-    nTrapz = 1e3;
+    nTrapz = 1e2;
     integralLimit = 10;
     sampling = false;
-    tic
     gp = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
                      lengthScale, signalSigma, noiseSigma, ...
                      noisyTest, nTrapz, integralLimit, ...
                      lowerAction, upperAction, sampling);
-    toc
-    
-    tic
+
     Jt(e + 1) = evaluatePolicy(gp, nBins, horizon);
-    toc
-    
+
     % Sampling
     %sampling = true;
     %gp = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
@@ -59,5 +55,5 @@ for e = 0:nExperiments - 1
 end
 
 savePath = strcat(initialPath, '/', nEpisodesStr,'/');
-save(strcat(savePath, 'resultsProdIntTrapz.txt'), 'Jt', '-ascii');
+save(strcat(savePath, 'resultsProdIntTrapz'), 'Jt');
 %save(strcat(savePath, 'resultsProdIntSampling.txt'), 'Js', '-ascii');
