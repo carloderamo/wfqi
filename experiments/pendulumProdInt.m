@@ -1,6 +1,6 @@
 clear all;
 % Parse ReLe dataset
-initialPath = '/home/shirokuma/Desktop/AAAI2017-GP/Continuous';
+initialPath = '/home/shirokuma/Desktop';
 
 % Algorithm
 gamma = 0.9;
@@ -12,16 +12,15 @@ nIterations = 10;
 lengthScale = [0.5 0.5 0.5]';
 signalSigma = 1;
 noiseSigma = 1;
-nExperiments = 5;
+nExperiments = 10;
 algorithm = 'wfqi';
 
-nEpisodes = 100;
+nEpisodes = 10;
 horizon = 100;
 rewardNoiseSigma = 0;
 
 nBins = 1e2;
-Jt = zeros(nExperiments, 1);
-Js = zeros(nExperiments, 1);
+J = zeros(nExperiments, 1);
 
 nEpisodesStr = strcat(int2str(nEpisodes), 'Episodes');
 
@@ -35,25 +34,23 @@ for e = 0:nExperiments - 1
     noisyTest = false;
 
     % Trapz
-    nTrapz = 1e2;
+    nTrapz = 1e3;
     integralLimit = 10;
-    sampling = false;
-    gp = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
+    [gp, tTrapz] = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
                      lengthScale, signalSigma, noiseSigma, ...
                      noisyTest, nTrapz, integralLimit, ...
-                     lowerAction, upperAction, sampling);
-
-    Jt(e + 1) = evaluatePolicy(gp, nBins, horizon);
-
+                     lowerAction, upperAction, false, 0, 0);
+    JTrapz(e + 1) = evaluatePolicy(gp, nBins, horizon);
+    
     % Sampling
-    %sampling = true;
-    %gp = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
-    %                 lengthScale, signalSigma, noiseSigma, ...
-    %                 noisyTest, nTrapz, integralLimit, ...
-    %                 lowerAction, upperAction, sampling);
-    %Js(e + 1) = evaluatePolicy(gp, nBins, horizon);
+    nPoints = 1e4;
+    nSamples = 100;
+    [gp, tSampl] = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
+                     lengthScale, signalSigma, noiseSigma, ...
+                     noisyTest, nTrapz, integralLimit, ...
+                     lowerAction, upperAction, true, nPoints, nSamples);
+    JSampl(e + 1) = evaluatePolicy(gp, nBins, horizon);
 end
 
-savePath = strcat(initialPath, '/', nEpisodesStr,'/');
-save(strcat(savePath, 'resultsProdIntTrapz'), 'Jt');
-%save(strcat(savePath, 'resultsProdIntSampling.txt'), 'Js', '-ascii');
+savePath = strcat(initialPath, '/');
+save(strcat(savePath, 'results'), 'JTrapz', 'tTrapz', 'JSampl', 'tSampl');

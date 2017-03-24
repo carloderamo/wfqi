@@ -1,7 +1,7 @@
-function [gp] = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
+function [gp, t] = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
                             lengthScale, signalSigma, noiseSigma, ...
                             noisyTest, nTrapz, integralLimit, ...
-                            lowerAction, upperAction, sampling)
+                            lowerAction, upperAction, approximated, nPoints, nSamples)
         
     actionIdx = stateDim + 1;
     rewardIdx = stateDim + 2;
@@ -24,7 +24,11 @@ function [gp] = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
     for i = 2:nIterations
         fprintf('Iteration: %d\n', i);
         W = zeros(size(sars, 1), 1);
+        t = zeros(size(sars, 1), 1);
         for j = 1:length(W)
+            if ~approximated
+                tic
+                % Trapz
                 xs = linspace(-integralLimit, integralLimit, nTrapz);
                 % Action is normalized by 5 (WARNING: ONLY FOR AAAI2017 PENDULUM)
                 xa = linspace(lowerAction, upperAction, nTrapz) / 5;
@@ -50,54 +54,38 @@ function [gp] = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
                                                   size(pdfs, 2)) .* ...
                                                   pdfs' ./ cdfs') .* ...
                                                   productInt);
-%                fprintf('Trapz: %f\n', W(j))
-%
-%                 N = 1e3;
-%                 E2 = zeros(N,1);
-%                 nsam = 1e3;
-% 
-%                 points = (-5 + 10 * rand(nsam * N, 1)) / 5;
-%                 gpInput = repmat(nextStates(j, :), nsam * N, 1);
-%                 gpInput = [gpInput, points];
-%                 [means, sigmas] = gp.predict(gpInput);
-% 
-%                 if ~noisyTest
-%                     sigmas = sqrt(sigmas.^2 - gp.Sigma^2);
-%                 end;
-%                 for z=1:nsam:size(means, 1)
-%                     [~, idx] = max(normrnd(means(z:z + nsam - 1, :), sigmas(z:z + nsam - 1, :)));
-%                     E2(round(z / nsam) + 1) = means(idx);
-%                 end
-%                 W(j) = mean(E2);
-%                
-%                 fprintf('sampl1: %f\n', W(j))
-% 
-%                 tic
-%                 nsam = 1e3;
-%                 points = linspace(-5, 5, nsam) / 5;
-%                 gpInput = repmat(nextStates(j, :), nsam, 1);
-%                 gpInput = [gpInput, points'];
-%                 [means, sigmas] = gp.predict(gpInput);
-%                 if ~noisyTest
-%                     sigmas = sqrt(sigmas.^2 - gp.Sigma^2);
-%                 end;
-% 
-%                 N = 1e3;
-%                 [~, idx] = max(normrnd(repmat(means, 1, N), repmat(sigmas, 1, N)));
-%                 E3 = means(idx);
-%                 W(j) = mean(E3);
-%                 toc
-%                 fprintf('Sampl2: %f\n', W(j))
-%                 if i == 6
-%                    answer = input('Valuta gp: '); 
-%                     if strcmp(answer, 'yes')
-%                         figure;
-%                         hold
-%                         plot(linspace(-5, 5, nsam), means - sigmas, 'r');
-%                         plot(linspace(-5, 5, nsam), means);
-%                         plot(linspace(-5, 5, nsam), means + sigmas, 'r');
-%                     end
-%                 end               
+                t(j) = toc;
+            else
+                % Sampling
+                tic
+                E = zeros(nPoints, 1);
+                minZ = -1;
+                maxZ = 1;
+
+                y =  2 * maxZ * rand(nPoints, 1) - maxZ;
+
+                gpInput = [repmat(nextStates(j, :), nPoints, 1), y];
+                [meanY, sigmaY] = gp.predict(gpInput);
+
+                samples = normrnd(repmat(meanY, 1, nSamples), repmat(sigmaY, 1, nSamples));
+
+                zIdx = 1;
+                yIdx = 1;
+                zSample = 1;
+                tic
+                for n = 1:nPoints - 1
+                    yIdx = yIdx + 1;
+                    if(samples(yIdx, 1) > samples(zIdx, zSample))
+                       zIdx = yIdx;
+                       zSample = 1;
+                    else
+                        zSample = mod(zSample, nSamples) + 1;
+                    end
+                    E(n) = meanY(zIdx);
+                end
+                W(j) = mean(E);
+                t(j) = toc;
+            end
         end
 
         W = W .* (1 - sars(:, absorbingStateIdx));
