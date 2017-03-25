@@ -15,7 +15,7 @@ noiseSigma = 1;
 nExperiments = 10;
 algorithm = 'wfqi';
 
-nEpisodes = 10;
+nEpisodes = 1;
 horizon = 100;
 rewardNoiseSigma = 0;
 
@@ -43,7 +43,7 @@ for e = 0:nExperiments - 1
     JTrapz(e + 1) = evaluatePolicy(gp, nBins, horizon);
     
     % Sampling
-    nPoints = 1e4;
+    nPoints = 1e3;
     nSamples = 100;
     [gp, tSampl] = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
                      lengthScale, signalSigma, noiseSigma, ...

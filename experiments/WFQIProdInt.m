@@ -72,7 +72,6 @@ function [gp, t] = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
                 zIdx = 1;
                 yIdx = 1;
                 zSample = 1;
-                tic
                 for n = 1:nPoints - 1
                     yIdx = yIdx + 1;
                     if(samples(yIdx, 1) > samples(zIdx, zSample))
