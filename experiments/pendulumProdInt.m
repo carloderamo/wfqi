@@ -36,21 +36,12 @@ for e = 0:nExperiments - 1
     % Trapz
     nTrapz = 1e3;
     integralLimit = 10;
-    [gp, tTrapz] = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
+    gp = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
                      lengthScale, signalSigma, noiseSigma, ...
                      noisyTest, nTrapz, integralLimit, ...
                      lowerAction, upperAction, false, 0, 0);
-    JTrapz(e + 1) = evaluatePolicy(gp, nBins, horizon);
-    
-    % Sampling
-    nPoints = 1e3;
-    nSamples = 100;
-    [gp, tSampl] = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
-                     lengthScale, signalSigma, noiseSigma, ...
-                     noisyTest, nTrapz, integralLimit, ...
-                     lowerAction, upperAction, true, nPoints, nSamples);
-    JSampl(e + 1) = evaluatePolicy(gp, nBins, horizon);
+    J(e + 1) = evaluatePolicy(gp, nBins, horizon);
 end
 
-savePath = strcat(initialPath, '/');
-save(strcat(savePath, 'results'), 'JTrapz', 'tTrapz', 'JSampl', 'tSampl');
+savePath = strcat('../results/', nEpisodesStr, '/');
+save(strcat(savePath, 'results.txt'), 'J', '-ascii');

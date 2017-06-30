@@ -1,7 +1,5 @@
 clear all;
 rng('shuffle');
-% Parse ReLe dataset
-initialPath = '/home/shirokuma/Desktop/AAAI2017-GP/Discrete';
 
 % Algorithm
 gamma = 0.9;
@@ -14,7 +12,7 @@ noiseSigma = 1;
 nExperiments = 100;
 algorithms = {'fqi', 'dfqi', 'wfqi'};
 
-nEpisodes = 25;
+nEpisodes = 37;
 horizon = 100;
 rewardNoiseSigma = 0;
 
@@ -55,5 +53,5 @@ parfor e = 0:nExperiments - 1
     J(e + 1, :) = [fqiJ, dFqiJ, wFqiJ];
 end
 
-savePath = strcat(initialPath, '/', nEpisodesStr, '/');
+savePath = strcat('../results/', nEpisodesStr, '/');
 save(strcat(savePath, 'results.txt'), 'J', '-ascii');
