@@ -1,6 +1,4 @@
 clear all;
-% Parse ReLe dataset
-initialPath = '/home/shirokuma/Desktop';
 
 % Algorithm
 gamma = 0.9;

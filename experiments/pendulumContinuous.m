@@ -1,7 +1,5 @@
 clear all;
 rng('shuffle');
-% Parse ReLe dataset
-initialPath = '/home/shirokuma/Desktop/AAAI2017-GP/Continuous';
 
 % Algorithm
 gamma = 0.9;
