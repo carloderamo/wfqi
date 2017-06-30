@@ -53,5 +53,5 @@ parfor e = 0:nExperiments - 1
     J(e + 1, :) = [fqiJ, dFqiJ, wFqiJ];
 end
 
-savePath = strcat('../results/', nEpisodesStr, '.txt');
+savePath = strcat('../results/', nEpisodesStr, 'Discrete.txt');
 save(strcat(savePath), 'J', '-ascii');
