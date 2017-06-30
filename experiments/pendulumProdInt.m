@@ -41,5 +41,5 @@ for e = 0:nExperiments - 1
     J(e + 1) = evaluatePolicy(gp, nBins, horizon);
 end
 
-savePath = strcat('../results/', nEpisodesStr, '/');
+savePath = strcat('../results/', nEpisodesStr, '.txt');
 save(strcat(savePath, 'results.txt'), 'J', '-ascii');
