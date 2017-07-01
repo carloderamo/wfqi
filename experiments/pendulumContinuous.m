@@ -9,7 +9,7 @@ nIterations = 10;
 lengthScale = [0.5 0.5 0.5]';
 signalSigma = 1;
 noiseSigma = 1;
-nExperiments = 10;
+nExperiments = 100;
 algorithms = {'fqi', 'dfqi', 'wfqi'};
 
 horizon = 100;
