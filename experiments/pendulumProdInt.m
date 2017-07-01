@@ -13,33 +13,34 @@ noiseSigma = 1;
 nExperiments = 10;
 algorithm = 'wfqi';
 
-nEpisodes = 1;
 horizon = 100;
 rewardNoiseSigma = 0;
 
 nBins = 1e2;
 J = zeros(nExperiments, 1);
 
-nEpisodesStr = strcat(int2str(nEpisodes), 'Episodes');
+for nEpisodes = [5, 10, 25, 37, 50, 62, 75, 87, 100]
+    nEpisodesStr = strcat(int2str(nEpisodes), 'Episodes');
 
-for e = 0:nExperiments - 1
-    fprintf('Experiment: %d\n', e + 1);
+    for e = 0:nExperiments - 1
+        fprintf('Experiment: %d\n', e + 1);
 
-    % Make sars dataset    
-    sars = collectDataset(rewardNoiseSigma, nEpisodes, horizon, nActions);
+        % Make sars dataset    
+        sars = collectDataset(rewardNoiseSigma, nEpisodes, horizon, nActions);
 
-    % W-Fitted Q-Iteration
-    noisyTest = false;
+        % W-Fitted Q-Iteration
+        noisyTest = false;
 
-    % Trapz
-    nTrapz = 1e3;
-    integralLimit = 10;
-    gp = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
-                     lengthScale, signalSigma, noiseSigma, ...
-                     noisyTest, nTrapz, integralLimit, ...
-                     lowerAction, upperAction, false, 0, 0);
-    J(e + 1) = evaluatePolicy(gp, nBins, horizon);
+        % Trapz
+        nTrapz = 1e3;
+        integralLimit = 10;
+        gp = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
+                         lengthScale, signalSigma, noiseSigma, ...
+                         noisyTest, nTrapz, integralLimit, ...
+                         lowerAction, upperAction, false, 0, 0);
+        J(e + 1) = evaluatePolicy(gp, nBins, horizon);
+    end
+
+    savePath = strcat('../results/', nEpisodesStr, 'ProdInt.txt');
+    save(strcat(savePath), 'J', '-ascii');
 end
-
-savePath = strcat('../results/', nEpisodesStr, 'ProdInt.txt');
-save(strcat(savePath, 'results.txt'), 'J', '-ascii');
