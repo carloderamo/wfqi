@@ -4,7 +4,7 @@ rng('shuffle');
 % Algorithm
 gamma = 0.9;
 stateDim = 2;
-nActions = 100;
+nActions = 11;
 nIterations = 10;
 lengthScale = [0.5 0.5 0.5]';
 signalSigma = 1;
