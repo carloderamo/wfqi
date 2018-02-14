@@ -10,7 +10,7 @@ nIterations = 10;
 lengthScale = [0.5 0.5 0.5]';
 signalSigma = 1;
 noiseSigma = 1;
-nExperiments = 100;
+nExperiments = 10;
 algorithm = 'wfqi';
 
 horizon = 100;
@@ -22,7 +22,7 @@ J = zeros(nExperiments, 1);
 for nEpisodes = [5, 10, 25, 37, 50, 62, 75, 87, 100]
     nEpisodesStr = strcat(int2str(nEpisodes), 'Episodes');
 
-    for e = 0:nExperiments - 1
+    parfor e = 0:nExperiments - 1
         fprintf('Experiment: %d\n', e + 1);
 
         % Make sars dataset    
@@ -37,10 +37,10 @@ for nEpisodes = [5, 10, 25, 37, 50, 62, 75, 87, 100]
         gp = WFQIProdInt(sars, gamma, stateDim, nIterations, ...
                          lengthScale, signalSigma, noiseSigma, ...
                          noisyTest, nTrapz, integralLimit, ...
-                         lowerAction, upperAction, false, 0, 0);
+                         lowerAction, upperAction, false, 0);
         J(e + 1) = evaluatePolicy(gp, nBins, horizon);
     end
 
-    savePath = strcat('../results/', nEpisodesStr, 'ProdInt.txt');
+    savePath = strcat('results/', nEpisodesStr, 'ProdInt.txt');
     save(strcat(savePath), 'J', '-ascii');
 end
