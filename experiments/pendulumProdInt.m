@@ -19,7 +19,7 @@ rewardNoiseSigma = 0;
 nBins = 1e2;
 J = zeros(nExperiments, 1);
 
-for nEpisodes = [5, 10, 25, 37, 50, 62, 75, 87, 100]
+for nEpisodes = [100, 87, 75, 62, 50, 37, 25, 10, 5]
     nEpisodesStr = strcat(int2str(nEpisodes), 'Episodes');
 
     parfor e = 0:nExperiments - 1
