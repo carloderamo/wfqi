@@ -10,7 +10,7 @@ lengthScale = [0.5 0.5]';
 signalSigma = 1;
 noiseSigma = 1;
 nExperiments = 100;
-algorithms = {'fqi', 'dfqi', 'wfqi'};
+algorithms = {'fqi', 'dfqi', 'wfqi','maxminfqi'};
 
 horizon = 100;
 rewardNoiseSigma = 0;
@@ -34,6 +34,11 @@ for nEpisodes = [5, 10, 25, 37, 50, 62, 75, 87, 100]
                 gps = FQI(sars, gamma, stateDim, nActions, nIterations, lengthScale, signalSigma, noiseSigma);
                 
                 fqiJ = evaluatePolicy(gps, nActions, horizon);
+            elseif strcmp(algorithm, 'maxminfqi')
+                shuffle = false;
+                gps = maxminFQI(sars, gamma, stateDim, nActions, nIterations, lengthScale, signalSigma, noiseSigma, shuffle);
+                
+                maxminFqiJ = evaluatePolicy(gps, nActions, horizon);
             elseif strcmp(algorithm, 'dfqi')
                 % Double Fitted Q-Iteration
                 shuffle = false;
@@ -50,9 +55,9 @@ for nEpisodes = [5, 10, 25, 37, 50, 62, 75, 87, 100]
             end
         end
         
-        J(e + 1, :) = [fqiJ, dFqiJ, wFqiJ];
+        J(e + 1, :) = [fqiJ, dFqiJ, maxminFqiJ, wFqiJ];
     end
 
-    savePath = strcat('../results/', nEpisodesStr, 'Discrete.txt');
+    savePath = strcat('./results/', nEpisodesStr, 'Discrete.txt');
     save(strcat(savePath), 'J', '-ascii');
 end
