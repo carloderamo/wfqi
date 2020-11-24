@@ -1,7 +1,7 @@
 clear all;
 clc;
 close all;
-type = './Discrete';
+type = './results/Discrete';
 listing = dir(type);
 
 data = [];

@@ -10,7 +10,7 @@ lengthScale = [0.5 0.5]';
 signalSigma = 1;
 noiseSigma = 1;
 nExperiments = 100;
-algorithms = {'fqi', 'dfqi', 'wfqi','maxminfqi'};
+algorithms = {'maxminfqi'};
 
 horizon = 100;
 rewardNoiseSigma = 0;
@@ -33,31 +33,31 @@ for nEpisodes = [5, 10, 25, 37, 50, 62, 75, 87, 100]
                 % Fitted Q-Iteration
                 gps = FQI(sars, gamma, stateDim, nActions, nIterations, lengthScale, signalSigma, noiseSigma);
                 
-                fqiJ = evaluatePolicy(gps, nActions, horizon);
+                fqiJ = evaluatePolicy(gps, nActions, horizon, false);
             elseif strcmp(algorithm, 'maxminfqi')
                 shuffle = false;
                 gps = maxminFQI(sars, gamma, stateDim, nActions, nIterations, lengthScale, signalSigma, noiseSigma, shuffle);
                 
-                maxminFqiJ = evaluatePolicy(gps, nActions, horizon);
+                maxminFqiJ = evaluatePolicy(gps, nActions, horizon, true);
             elseif strcmp(algorithm, 'dfqi')
                 % Double Fitted Q-Iteration
                 shuffle = false;
                 gps = doubleFQI(sars, gamma, stateDim, nActions, nIterations, lengthScale, signalSigma, noiseSigma, shuffle);
                 
-                dFqiJ = evaluatePolicy(gps, nActions, horizon);
+                dFqiJ = evaluatePolicy(gps, nActions, horizon, false);
             elseif strcmp(algorithm, 'wfqi')
                 % W-Fitted Q-Iteration
                 noisyTest = false;
                 nSamples = 500;
                 gps = WFQI(sars, gamma, stateDim, nActions, nIterations, lengthScale, signalSigma, noiseSigma, noisyTest, nSamples);
                 
-                wFqiJ = evaluatePolicy(gps, nActions, horizon);
+                wFqiJ = evaluatePolicy(gps, nActions, horizon, false);
             end
         end
         
         J(e + 1, :) = [fqiJ, dFqiJ, maxminFqiJ, wFqiJ];
     end
 
-    savePath = strcat('./results/', nEpisodesStr, 'Discrete.txt');
+    savePath = strcat('./results/Discrete/', nEpisodesStr, '/results.txt');
     save(strcat(savePath), 'J', '-ascii');
 end

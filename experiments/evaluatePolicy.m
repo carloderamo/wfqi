@@ -1,4 +1,4 @@
-function [J] = evaluatePolicy(gps, nBins, horizon)
+function [J] = evaluatePolicy(gps, nBins, horizon, maxmin)
 
     uMax = 5.0;
     actions = linspace(-uMax, uMax, nBins);
@@ -23,14 +23,22 @@ function [J] = evaluatePolicy(gps, nBins, horizon)
                         for k = 1:length(qs)
                             prediction1 = gps{1}.predict([state ./ [pi, pi / 4 / 0.01], actions(k) / uMax]);
                             prediction2 = gps{2}.predict([state ./ [pi, pi / 4 / 0.01], actions(k) / uMax]);
-                            qs(k) = mean([prediction1, prediction2]);
+                            if maxmin
+                                qs(k) = min(prediction1, prediction2);
+                            else
+                                qs(k) = mean([prediction1, prediction2]);
+                            end
                         end
                     else
                         qs = zeros(size(gps, 2), 1);
                         for k = 1:length(qs)
                             prediction1 = gps{1, k}.predict(state ./ [pi, pi / 4 / 0.01]);
                             prediction2 = gps{2, k}.predict(state ./ [pi, pi / 4 / 0.01]);
-                            qs(k) = mean([prediction1, prediction2]);
+                            if maxmin
+                                qs(k) = min(prediction1, prediction2);
+                            else
+                                qs(k) = mean([prediction1, prediction2]);
+                            end
                         end
                     end
                 else
